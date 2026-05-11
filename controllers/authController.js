@@ -1,12 +1,13 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const users = require('../data/users');
+const { users } = require('../data/users');
 
 exports.register = async (req, res) => {
+
     const { email, password } = req.body;
 
-    const existingUser = users.find(user => user.email === email);
+    const existingUser = users.find(u => u.email === email);
 
     if (existingUser) {
         return res.status(400).json({
@@ -30,9 +31,10 @@ exports.register = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+
     const { email, password } = req.body;
 
-    const user = users.find(user => user.email === email);
+    const user = users.find(u => u.email === email);
 
     if (!user) {
         return res.status(400).json({
