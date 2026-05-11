@@ -35,23 +35,32 @@ exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).json({ message: 'Missing fields' });
+            return res.status(400).json({
+                message: 'Email and password required'
+            });
         }
 
         const user = users.find(u => u.email === email);
 
+        // SAFE CHECK FIRST (IMPORTANT)
         if (!user) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({
+                message: 'Invalid credentials'
+            });
         }
 
         if (!user.password) {
-            return res.status(500).json({ message: 'User data corrupted' });
+            return res.status(500).json({
+                message: 'User data corrupted'
+            });
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            return res.status(400).json({ message: 'Invalid credentials' });
+            return res.status(400).json({
+                message: 'Invalid credentials'
+            });
         }
 
         const token = jwt.sign(
@@ -60,7 +69,7 @@ exports.login = async (req, res) => {
             { expiresIn: '1d' }
         );
 
-        res.json({
+        return res.json({
             token,
             user: {
                 id: user.id,
@@ -69,7 +78,10 @@ exports.login = async (req, res) => {
         });
 
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: 'Server error' });
+        console.error("LOGIN ERROR:", err);
+
+        return res.status(500).json({
+            message: 'Server error'
+        });
     }
 };
